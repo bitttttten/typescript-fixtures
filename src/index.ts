@@ -34,8 +34,8 @@ export const validate: PluginValidateFn<any> = async (
   outputFile: string
 ) => {
   if (extname(outputFile) !== '.ts') {
-    throw new Error(`Plugin "typescript-msw" requires extension to be ".ts"!`);
+    throw new Error(`Plugin "typescript-fixtures" requires extension to be ".ts"!`);
   }
 };
 
-export { Visitor as MSWVisitor };
+export { Visitor };
