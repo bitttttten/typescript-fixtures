@@ -95,7 +95,7 @@ export class Visitor extends ClientSideBaseVisitor<
 
   public getContent() {
     let endpoint: string;
-    const { map } = this.config;
+    // const { map } = this.config;
 
     const operations = this._operationsToInclude.map(
       ({

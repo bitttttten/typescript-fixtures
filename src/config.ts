@@ -6,7 +6,7 @@ interface Map { [key: string]: string | Map; }
  * @description This plugin generates mock fixtures with TypeScript typings.
  */
 export interface Config {
-    map: Map
+    map?: Map
 }
 
 export interface RawPluginConfig extends RawClientSideBasePluginConfig, Config {}

@@ -1,0 +1,7 @@
+// Vitest Snapshot v1
+
+exports[`Should generate mocks based on queries and mutations > imports 1`] = `
+[
+  "import { faker } from '@faker-js/faker'",
+]
+`;
