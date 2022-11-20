@@ -16,7 +16,6 @@ import {
 } from "graphql";
 import { pascalCase, camelCase } from "change-case-all";
 import { faker } from "@faker-js/faker";
-import dot from "dot-object";
 
 function isFieldNode(sel: SelectionNode): sel is FieldNode {
   return sel.kind === Kind.FIELD;
@@ -116,59 +115,19 @@ export class Visitor extends ClientSideBaseVisitor<
             ...node.selectionSet.selections,
           ]);
 
-          const dotSelections = dot.dot(selections);
-
-          console.log("selections", selections);
-
-          const variables = [];
+          const variables = getVariables(selections);
+          const base = getBase(selections);
 
           // //           console.log(selections);
 
-          function renderInner(p: Part, depth = 0) {
-            const [key, value] = p;
-
-            const indent = Array(depth + 1).fill('\t').join('')
-
-            function print(value: string) {
-              variables.push(`${indent}${value}`)
-            }
-
-            if (typeof value === "string") {
-              if (depth === 0) {
-                print(`const ${key} = ${value};`);
-                return;
-              }
-
-              print(`${key}: ${value},`);
-
-              return;
-            }
-
-            if (depth === 0) {
-              print(`const ${key} = {`);
-            }
-
-            if (depth > 0) {
-              print(`${key}: {`);
-            }
-
-            for (const part of value) {
-              renderInner(part, depth + 1);
-            }
-
-            // start or no start, we need to render the closing tag
-            print(`}`);
-          }
-
-          for (const selection of selections) {
-            renderInner(selection);
-          }
 
           return `
 export const ${handlerName} = (${inputName}?: Partial<${operationResultType}>) {
 ${variables.join("\n")}
 
-\treturn merge({}, ${inputName})
+${base.join("\n")}
+
+\treturn merge(base, ${inputName})
 }
           `;
         }
@@ -208,4 +167,64 @@ ${variables.join("\n")}
 
     return null;
   }
+}
+
+function getVariables(selections: Part[]) {
+  const variables = []
+
+  function renderInner(p: Part, depth = 0) {
+    const [key, value] = p;
+
+    const indent = Array(depth + 1).fill('\t').join('')
+
+    function print(value: string) {
+      variables.push(`${indent}${value}`)
+    }
+
+    if (typeof value === "string") {
+      if (depth === 0) {
+        print(`const ${key} = ${value};`);
+        return;
+      }
+
+      print(`${key}: ${value},`);
+
+      return;
+    }
+
+    if (depth === 0) {
+      print(`const ${key} = {`);
+    }
+
+    if (depth > 0) {
+      print(`${key}: {`);
+    }
+
+    for (const part of value) {
+      renderInner(part, depth + 1);
+    }
+
+    // start or no start, we need to render the closing tag
+    print(`}`);
+  }
+
+  for (const selection of selections) {
+    renderInner(selection);
+  }
+
+  return variables
+}
+
+function getBase(selections: Part[]) {
+  const base = []
+
+  base.push("\tconst base = {")
+
+  for (const [key] of selections) {
+    base.push(`\t\t${key},`)
+  }
+
+  base.push(`\t}`)
+
+  return base
 }
