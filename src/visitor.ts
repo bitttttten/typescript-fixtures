@@ -53,6 +53,10 @@ function getValueFromSelection(path: string) {
     }
   }
 
+  if (path === "id") {
+    return `faker.datatype.uuid()`;
+  }
+
   return `faker.datatype.string(5)`;
 }
 
@@ -120,7 +124,6 @@ export class Visitor extends ClientSideBaseVisitor<
 
           // //           console.log(selections);
 
-
           return `
 export const ${handlerName} = (${inputName}?: Partial<${operationResultType}>) {
 ${variables.join("\n")}
@@ -170,15 +173,17 @@ ${base.join("\n")}
 }
 
 function getVariables(selections: Part[]) {
-  const variables = []
+  const variables = [];
 
   function renderInner(p: Part, depth = 0) {
     const [key, value] = p;
 
-    const indent = Array(depth + 1).fill('\t').join('')
+    const indent = Array(depth + 1)
+      .fill("\t")
+      .join("");
 
     function print(value: string) {
-      variables.push(`${indent}${value}`)
+      variables.push(`${indent}${value}`);
     }
 
     if (typeof value === "string") {
@@ -212,19 +217,19 @@ function getVariables(selections: Part[]) {
     renderInner(selection);
   }
 
-  return variables
+  return variables;
 }
 
 function getBase(selections: Part[]) {
-  const base = []
+  const base = [];
 
-  base.push("\tconst base = {")
+  base.push("\tconst base = {");
 
   for (const [key] of selections) {
-    base.push(`\t\t${key},`)
+    base.push(`\t\t${key},`);
   }
 
-  base.push(`\t}`)
+  base.push(`\t}`);
 
-  return base
+  return base;
 }
