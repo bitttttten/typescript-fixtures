@@ -15,6 +15,7 @@ test("Should generate mocks based on queries and mutations", async () => {
 
   // handler function names
   expect(result.content).toContain(`generateUserQueryFixture`);
+  expect(result.content).toMatchSnapshot("content");
 
   // handles imports
   expect(result.prepend).toMatchSnapshot("imports");

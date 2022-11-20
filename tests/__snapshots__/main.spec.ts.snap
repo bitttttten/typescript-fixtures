@@ -1,5 +1,33 @@
 // Vitest Snapshot v1
 
+exports[`Should generate mocks based on queries and mutations > content 1`] = `
+"
+
+export const generateUserQueryFixture = (user?: Partial<UserQuery>) {
+	const slug = faker.lorem.slug();
+	const id = faker.datatype.string(5);
+	const firstName = faker.name.firstName();
+	const lastName = faker.name.lastName();
+	const user = {
+		address: {
+			number: faker.datatype.number(),
+			street: faker.address.street(),
+		}
+	}
+
+	const base = {
+		slug,
+		id,
+		firstName,
+		lastName,
+		user,
+	}
+
+	return merge(base, user)
+}
+          "
+`;
+
 exports[`Should generate mocks based on queries and mutations > imports 1`] = `
 [
   "import { faker } from '@faker-js/faker'",
